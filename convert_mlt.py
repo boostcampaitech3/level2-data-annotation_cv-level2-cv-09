@@ -15,6 +15,7 @@ DST_DATASET_DIR = '/data/datasets/ICDAR17_Korean'  # FIXME
 
 NUM_WORKERS = 32  # FIXME
 
+# 데이터셋 변환 시, 확장자 확인 필요
 IMAGE_EXTENSIONS = {'.gif', '.jpg', '.png'}
 
 LANGUAGE_MAP = {
