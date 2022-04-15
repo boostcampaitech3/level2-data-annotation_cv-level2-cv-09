@@ -64,6 +64,9 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
     model = EAST()
     model.to(device)
 
+    #model.load_state_dict(torch.load('/opt/ml/code/trained_models/latest.pth')) # 끊긴 모델 불러올 때 주석 해제
+    #model.to(device)                                                            # 끊긴 모델 불러올 때 주석 해제
+
     opt_module = getattr(import_module("torch.optim"), optimizer)  # default: Adam
     optimizer = opt_module(
         filter(lambda p: p.requires_grad, model.parameters()),
@@ -73,7 +76,11 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
     scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[max_epoch // 2], gamma=0.1)
 
     model.train()
+    #trained_epoch= 40 # 끊긴 모델 불러올 때 주석 해제. 끊긴 epoch로 설정
     for epoch in range(max_epoch):
+        #if epoch < trained_epoch: # 끊긴 모델 불러올 때 주석 해제
+        #    continue            # 끊긴 모델 불러올 때 주석 해제
+
         epoch_loss, epoch_start = 0, time.time()
         with tqdm(total=num_batches) as pbar:
             for img, gt_score_map, gt_geo_map, roi_mask in train_loader:
