@@ -14,13 +14,13 @@ parser = argparse.ArgumentParser(description='Dataset Visualization')
 parser.add_argument(
     '--root_dir',
     type=str,
-    default='/opt/ml/input/data/ICDAR17_Korean',
+    default='/opt/ml/input/data/ICDAR17_Korean/images/',
     help='데이터 루트 디렉토리',
 )
 parser.add_argument(
     '--annotation_file_name', 
     type=str, 
-    default='train', 
+    default='/opt/ml/input/data/ICDAR17_Korean/ufo/train.json',
     help='어노테이션 파일 명 (.json 생략)',
 )
 parser.add_argument(
@@ -72,7 +72,7 @@ def draw_polygon(img: Image, pts: Sequence[point], illegibility: bool):
     img_draw.line(pts, width=3, fill=(0, 255, 255) if not illegibility else (255, 0, 255))
 
 # -- load annotations
-with open(os.path.join(args.root_dir, 'ufo', args.annotation_file_name)+'.json', 'r') as f:
+with open(args.annotation_file_name, 'r') as f:
     anno = json.load(f)
 
 fnames = tuple(anno['images'].keys())
@@ -120,7 +120,7 @@ def update_img(btn_n, btn_p, btn_g, go_idx: int):
     else:  # 초기화
         img_idx = 0
 
-    img_path = os.path.join(args.root_dir, 'images', fnames[img_idx])
+    img_path = os.path.join(args.root_dir, fnames[img_idx])
     img = read_img(img_path, args.image_h)
     fig = px.imshow(img)
     fig.update_layout(height=args.image_h)
