@@ -43,6 +43,7 @@ def parse_args():
 
     parser.add_argument('--optimizer', type=str, default=Config.optimizer)
     parser.add_argument('--expr_name', type=str, default=Config.expr_name)
+    parser.add_argument('--resume_from', type=str, default=Config.resume_from)
 
     args = parser.parse_args()
 
@@ -54,34 +55,37 @@ def parse_args():
 
 
 def do_training(data_dir, model_dir, device, image_size, input_size, num_workers, batch_size,
-                learning_rate, max_epoch, save_interval, optimizer, expr_name):
+                learning_rate, max_epoch, save_interval, optimizer, expr_name, resume_from):
     dataset = SceneTextDataset(data_dir, split='train', image_size=image_size, crop_size=input_size)
     dataset = EASTDataset(dataset)
     num_batches = math.ceil(len(dataset) / batch_size)
     train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-
+    
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    start_epoch=0
     model = EAST()
     model.to(device)
-
-    #model.load_state_dict(torch.load('/opt/ml/code/trained_models/latest.pth')) # 끊긴 모델 불러올 때 주석 해제
-    #model.to(device)                                                            # 끊긴 모델 불러올 때 주석 해제
-
     opt_module = getattr(import_module("torch.optim"), optimizer)  # default: Adam
     optimizer = opt_module(
         filter(lambda p: p.requires_grad, model.parameters()),
         lr=learning_rate
     )
     
+    if resume_from:         # 이어서 학습
+        model_data = torch.load(resume_from)
+        model.load_state_dict(model_data['model_state_dict'])
+        model.to(device)
+        optimizer.load_state_dict(model_data['optimizer_state_dict'])
+        start_epoch= model_data['epoch']
+
     scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[max_epoch // 2], gamma=0.1)
+
 
     min_loss = 10.
     model.train()
-    #trained_epoch= 40 # 끊긴 모델 불러올 때 주석 해제. 끊긴 epoch로 설정
-    for epoch in range(max_epoch):
-        #if epoch < trained_epoch: # 끊긴 모델 불러올 때 주석 해제
-        #    continue            # 끊긴 모델 불러올 때 주석 해제
-
+    er_cnt=0
+    for epoch in range(start_epoch, max_epoch):
         epoch_loss, epoch_start = 0, time.time()
         with tqdm(total=num_batches) as pbar:
             for img, gt_score_map, gt_geo_map, roi_mask in train_loader:
@@ -128,15 +132,28 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
                     os.makedirs(model_dir)
 
                 ckpt_fpath = osp.join(model_dir, 'best_mean_loss.pth')
-                torch.save(model.state_dict(), ckpt_fpath)                
+                print(f'Best model saved at {epoch}!')
+                torch.save({
+                    'epoch': epoch,
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'model_state_dict': model.state_dict()},
+                    ckpt_fpath)
+            else:
+                er_cnt += 1
+                if er_cnt >= 5:
+                    break
 
         if (epoch + 1) % save_interval == 0:
             if not osp.exists(model_dir):
                 os.makedirs(model_dir)
 
             ckpt_fpath = osp.join(model_dir, 'latest.pth')
-            torch.save(model.state_dict(), ckpt_fpath)
-
+            torch.save({
+                'epoch': epoch,
+                'optimizer_state_dict': optimizer.state_dict(),
+                'model_state_dict': model.state_dict()},
+                ckpt_fpath)
+        
 
 def main(args):
     do_training(**args.__dict__)
