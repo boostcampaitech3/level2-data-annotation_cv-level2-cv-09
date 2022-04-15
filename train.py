@@ -75,6 +75,7 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
     
     scheduler = lr_scheduler.MultiStepLR(optimizer, milestones=[max_epoch // 2], gamma=0.1)
 
+    min_loss = 10.
     model.train()
     #trained_epoch= 40 # 끊긴 모델 불러올 때 주석 해제. 끊긴 epoch로 설정
     for epoch in range(max_epoch):
@@ -86,7 +87,13 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
             for img, gt_score_map, gt_geo_map, roi_mask in train_loader:
                 pbar.set_description('[Epoch {}]'.format(epoch + 1))
 
-                loss, extra_info = model.train_step(img, gt_score_map, gt_geo_map, roi_mask)
+                extra_info = None
+                output = model.train_step(img, gt_score_map, gt_geo_map, roi_mask)
+                if isinstance(output, tuple):
+                    loss, extra_info = output
+                else:
+                    loss = output
+                
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
@@ -95,16 +102,33 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
                 epoch_loss += loss_val
 
                 pbar.update(1)
-                val_dict = {
-                    'Cls loss': extra_info['cls_loss'], 'Angle loss': extra_info['angle_loss'],
-                    'IoU loss': extra_info['iou_loss']
-                }
+                val_dict = dict()
+                if extra_info:
+                    val_dict = {
+                        'Cls loss': extra_info['cls_loss'], 'Angle loss': extra_info['angle_loss'],
+                        'IoU loss': extra_info['iou_loss']
+                    }
+                else:
+                    val_dict = {
+                        'Cls loss': None, 'Angle loss': None,
+                        'IoU loss': None
+                    }
                 wandb.log(val_dict)
                 pbar.set_postfix(val_dict)
         scheduler.step()
         wandb.log({"Mean loss": epoch_loss / num_batches, "epoch": epoch})
         print('Mean loss: {:.4f} | Elapsed time: {}'.format(
             epoch_loss / num_batches, timedelta(seconds=time.time() - epoch_start)))
+
+        if isinstance(epoch_loss / num_batches, float):
+            if min_loss > epoch_loss / num_batches:
+                min_loss = epoch_loss / num_batches
+                print('Best Mean loss: {:.4f}'.format(min_loss))
+                if not osp.exists(model_dir):
+                    os.makedirs(model_dir)
+
+                ckpt_fpath = osp.join(model_dir, 'best_mean_loss.pth')
+                torch.save(model.state_dict(), ckpt_fpath)                
 
         if (epoch + 1) % save_interval == 0:
             if not osp.exists(model_dir):
