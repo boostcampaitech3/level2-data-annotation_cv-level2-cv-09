@@ -132,7 +132,6 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
                     os.makedirs(model_dir)
 
                 ckpt_fpath = osp.join(model_dir, 'best_mean_loss.pth')
-                print(f'Best model saved at {epoch}!')
                 torch.save({
                     'epoch': epoch,
                     'optimizer_state_dict': optimizer.state_dict(),
@@ -141,6 +140,7 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
             else:
                 er_cnt += 1
                 if er_cnt >= 5:
+                    print(f'Early Stopping at epoch{epoch}!')
                     break
 
         if (epoch + 1) % save_interval == 0:
