@@ -178,12 +178,12 @@ class EAST(nn.Module):
                                                geo_map.to(device), roi_mask.to(device))
         pred_score_map, pred_geo_map = self.forward(image)
 
-        loss, values_dict = self.criterion(score_map, pred_score_map, geo_map, pred_geo_map,
-                                           roi_mask)
-        extra_info = dict(**values_dict, score_map=pred_score_map, geo_map=pred_geo_map)
-
-        return loss, extra_info
-
+        loss = self.criterion(score_map, pred_score_map, geo_map, pred_geo_map, roi_mask)
+        if isinstance(loss, tuple):
+            loss, values_dict = loss
+            extra_info = dict(**values_dict, score_map=pred_score_map, geo_map=pred_geo_map)
+            return loss, extra_info
+        return loss
 
 if __name__ == '__main__':
     m = EAST()
