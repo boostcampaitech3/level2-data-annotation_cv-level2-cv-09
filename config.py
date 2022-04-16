@@ -13,3 +13,4 @@ class Config:
     save_interval=5
     optimizer='Adam'
     expr_name='config test'
+    resume_from='/opt/ml/code/trained_models/latest.pth' # 이어서 학습 할 .pth 경로 없으면 ''
