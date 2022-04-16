@@ -6,3 +6,6 @@
 
 ### polygon
 - rectangle이 아닌 polygon 형태의 bbox pre-process
+
+### data
+- data에 관한 처리
