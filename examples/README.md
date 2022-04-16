@@ -3,3 +3,6 @@
 
 ### EDA
 - 각종 EDA
+
+### polygon
+- rectangle이 아닌 polygon 형태의 bbox pre-process
