@@ -37,7 +37,8 @@ def parse_args():
 
 
 def do_inference(model, ckpt_fpath, data_dir, input_size, batch_size, split='public'):
-    model.load_state_dict(torch.load(ckpt_fpath, map_location='cpu'))
+    model_data = torch.load(ckpt_fpath)
+    model.load_state_dict(model_data['model_state_dict'])#, map_location='cpu')
     model.eval()
 
     image_fnames, by_sample_bboxes = [], []
