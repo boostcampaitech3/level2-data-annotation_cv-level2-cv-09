@@ -9,3 +9,6 @@
 
 ### data
 - data에 관한 처리
+
+### textinthewild
+- AIHub 한국어 글자체 이미지 Text in the wild 데이터 셋 학습 https://aihub.or.kr/aidata/133
