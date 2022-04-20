@@ -1,0 +1,2 @@
+http://datasets.cvc.uab.es/rrc/ImagesPart1.zip
+http://datasets.cvc.uab.es/rrc/ImagesPart2.zip

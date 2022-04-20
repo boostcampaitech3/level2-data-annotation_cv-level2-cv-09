@@ -1,0 +1,8 @@
+https://datasets.cvc.uab.es/rrc/ch8_training_images_1.zip
+https://datasets.cvc.uab.es/rrc/ch8_training_images_2.zip
+https://datasets.cvc.uab.es/rrc/ch8_training_images_3.zip
+https://datasets.cvc.uab.es/rrc/ch8_training_images_4.zip
+https://datasets.cvc.uab.es/rrc/ch8_training_images_5.zip
+https://datasets.cvc.uab.es/rrc/ch8_training_images_6.zip
+https://datasets.cvc.uab.es/rrc/ch8_training_images_7.zip
+https://datasets.cvc.uab.es/rrc/ch8_training_images_8.zip
