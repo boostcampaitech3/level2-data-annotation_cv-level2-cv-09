@@ -128,12 +128,14 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
             if min_loss > epoch_loss / num_batches:
                 er_cnt=0
 
+
                 min_loss = epoch_loss / num_batches
                 print('Best Mean loss: {:.4f}'.format(min_loss))
                 if not osp.exists(model_dir):
                     os.makedirs(model_dir)
 
                 ckpt_fpath = osp.join(model_dir, 'best_mean_loss.pth')
+
                 print(f'Best model saved at epoch{epoch+1}!')
                 torch.save({
                     'epoch': epoch,
@@ -143,20 +145,26 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
             else:
                 er_cnt += 1
                 if er_cnt >= 5:
+
                     print(f'early stopping at epoch {epoch+1}')
+
                     break
 
         if (epoch + 1) % save_interval == 0:
             if not osp.exists(model_dir):
                 os.makedirs(model_dir)
 
+
             ckpt_fpath = osp.join(model_dir, 'real-latest.pth')
+
             torch.save({
                 'epoch': epoch,
                 'optimizer_state_dict': optimizer.state_dict(),
                 'model_state_dict': model.state_dict()},
                 ckpt_fpath)
+
             print(f'latest model saved at epoch{epoch+1}')
+
         
 
 def main(args):
