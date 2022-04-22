@@ -29,9 +29,13 @@
 
 ### 🏆 LB Score
 
-- Public LB: f1 0.6732 
+- Public LB (8등/19팀)
+    - f1 : 0.7042, recall : 0.6199, precision : 0.8150
+</br>
+- Private LB: 0.7112 mAP(2등/19팀) 
+    - f1 : 0.6966, recall : 0.6195, precision : 0.7956
 
-![output](https://user-images.githubusercontent.com/82289435/164367324-781a010b-ecf2-4393-a675-ca71bae4c0e2.png)
+![output](https://user-images.githubusercontent.com/82289435/164719211-6aaeb9a4-6c2b-4740-b844-de1dcd20ec69.png)
 
 </br>
 
@@ -204,4 +208,6 @@ Recall, Precision, H-mean(F1 score)을 구해보면
 `-- train.py
 ```
 
-<!-- ### 📢 Presentation -->
+### 📢 Presentation
+[하이파이프_발표자료.pdf](https://drive.google.com/file/d/1bf-Mzx0vUxqSR30JWG0zEUtXYyvrnToY/view?usp=sharing)
+
