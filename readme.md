@@ -31,7 +31,6 @@
 
 - Public LB (8등/19팀)
     - f1 : 0.7042, recall : 0.6199, precision : 0.8150
-</br>
 - Private LB: 0.7112 mAP(2등/19팀) 
     - f1 : 0.6966, recall : 0.6195, precision : 0.7956
 
